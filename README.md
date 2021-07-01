@@ -6,7 +6,7 @@ First things first, I have a discord server for questions, support and bugs find
 # Installation
 ### To install DBDFixSkeletons:
 1. Go here: https://github.com/Befzz/blender3d_import_psk_psa > Right click on the 280 direct link under "Current (branch latest)" > Save Link As.
-2. Go here: https://github.com/AnimNyan/Fuse-Skeletons/releases > Right click on "DBDFixAnimations_v.X.X.X.zip" > Save Link As do NOT unzip it.
+2. Go here: https://github.com/AnimNyan/DBDFixAnimations/releases > Right click on "DBDFixAnimations_v.X.X.X.zip" > Save Link As do NOT unzip it.
 3. Open Blender and click Edit > Preferences > Add-Ons > Install > in the file explorer find "io_import_scene_unreal_psa_psk_280.py" and select it.
 4. In the Add-Ons search, search for psk and enable the Import Unreal Skeleton Mesh Add On.
 5. In the same Add-ons tab in step 3. > Install > in the file explorer find "DBDFixAnimations_v.X.X.X.zip" and select it.
