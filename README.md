@@ -28,7 +28,7 @@ This add on will delete those keyframes from problem bones.
 3. If the jaw looks like it has problems please enable the Fix Jaw Bone box.
 4. So select the skeleton with the problem animation and click Fix Dead By Daylight Killer Animation.
 
-If you have imported multiple PSAs which all have problems. 
+If you have imported multiple PSAs/Actions which all have problems: 
 1. Please make sure all Actions on the Skeleton have problems, because if you "Fix" an action with no problems, it will ignore a small amount of animation data.
 2. Select the skeleton with the problem actions and click Fix ALL Dead By Daylight Killer Actions to fix all actions at once.
 
