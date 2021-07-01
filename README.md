@@ -32,5 +32,5 @@ If you have imported multiple PSAs which all have problems.
 1. Please make sure all Actions on the Skeleton have problems, because if you "Fix" an action with no problems, it will ignore a small amount of animation data.
 2. Select the skeleton with the problem actions and click Fix ALL Dead By Daylight Killer Actions to fix all actions at once.
 
-### Disclaimer: When should this plugin not be used
+## Disclaimer: When should this plugin not be used
 Again, try not to fix make sure all Actions on the Skeleton have problems, because if you "Fix" an action with no problems, it will ignore a small amount of animation data.
