@@ -46,13 +46,13 @@ class PSKPSA_OT_fix_dbd_active_animation(bpy.types.Operator):
         if (active_object.type == "ARMATURE"):
             remove_problem_bones_animations(active_object, is_problem_jaw_bone)
             success_message = "The Problem Animation has been fixed successfully!"
-            bpy.ops.fuseskeletons.show_message(message = success_message)
+            bpy.ops.pskpsa.show_message_operator(message = success_message)
             log(success_message)
 
         #throw error message if active object is not a skeleton
         else:
             error_message = "Error: Active Object is not an Armature, ensure the active object is the Skeleton with problem animations."
-            bpy.ops.fuseskeletons.show_message(message = error_message)
+            bpy.ops.pskpsa.show_message_operator(message = error_message)
             log(error_message)
         
         return {'FINISHED'}
@@ -82,13 +82,13 @@ class PSKPSA_OT_fix_all_dbd_actions(bpy.types.Operator):
                 remove_problem_bones_animations(active_object, is_problem_jaw_bone)
 
             success_message = "All Problem Animations have been fixed successfully!"
-            bpy.ops.fuseskeletons.show_message(message = success_message)
+            bpy.ops.pskpsa.show_message_operator(message = success_message)
             log(success_message)
 
         #throw error message if active object is not a skeleton
         else:
             error_message = "Error: Active Object is not an Armature, ensure the active object is the Skeleton with problem animations."
-            bpy.ops.fuseskeletons.show_message(message = error_message)
+            bpy.ops.pskpsa.show_message_operator(message = error_message)
             log(error_message)
         
         return {'FINISHED'}
