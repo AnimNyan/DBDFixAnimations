@@ -17,7 +17,7 @@ bl_info = {
     "name": "PSK/PSA DBD Fix Animations",
     "author": "Anime Nyan",
     "version": (1, 0, 2),
-    "blender": (2, 92, 0),
+    "blender": (2, 93, 0),
     "location": "3D View > Properties > PSK PSA",
     "description": "Addon for befzz's 280 psk/psa importer add on to fix Dead By Daylight Animations",
     "warning": "",
