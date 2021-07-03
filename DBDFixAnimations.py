@@ -3,7 +3,7 @@ import bpy
 class fix_dbd_animations_properties(bpy.types.PropertyGroup):
     is_problem_jaw_bone: bpy.props.BoolProperty(name="Fix Jaw Bone", default = False)
 
-
+#this is panel 2 as it is the second panel in the psk/psa panel
 class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
     bl_label = "Fix DBD Animations"
     bl_idname = "PSKPSA_PT_fix_skeletons_import_panel_2"
