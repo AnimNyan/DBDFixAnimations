@@ -6,7 +6,7 @@ class fix_dbd_animations_properties(bpy.types.PropertyGroup):
 
 class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
     bl_label = "Fix DBD Animations"
-    bl_idname = " PSKPSA_PT_fix_skeletons_import_panel_2"
+    bl_idname = "PSKPSA_PT_fix_skeletons_import_panel_2"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PSK / PSA"
