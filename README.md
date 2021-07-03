@@ -3,6 +3,9 @@
 # Discord
 First things first, I have a discord server for questions, support and bugs find me here: https://discord.gg/rkkWSH2EMz
 
+# Credits
+Full credits to Pan for the wonderful original script and please check out their twitter here! https://twitter.com/HalloweenPandas
+
 # Installation
 ### To install DBDFixSkeletons:
 1. Go here: https://github.com/Befzz/blender3d_import_psk_psa > Right click on the 280 direct link under "Current (branch latest)" > Save Link As.
