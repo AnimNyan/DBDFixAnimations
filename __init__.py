@@ -9,13 +9,13 @@
 #
 # ##### END CC0 LICENSE BLOCK #####
 
-# by Anime Nyan
+# by Pan and Anime Nyan
 
 from . import DBDFixAnimations
 
 bl_info = {
     "name": "PSK/PSA DBD Fix Animations",
-    "author": "Anime Nyan",
+    "author": "Pan, Anime Nyan",
     "version": (1, 0, 2),
     "blender": (2, 93, 0),
     "location": "3D View > Properties > PSK PSA",
