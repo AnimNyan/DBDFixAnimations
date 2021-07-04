@@ -145,6 +145,18 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
     #used to correct the broken animations are on frame zero
     bpy.context.scene.frame_set(0)
     
+    #----------define problem bones arrays outside for loop over all pose bones
+    #so arrays are not constantly redefined
+
+    #the problem bones for broken killer animations are bones 
+    #which have roll and ik in their names
+    killer_problem_bones_array = ["roll", "ik"]
+
+    #the problem bones for broken survivor animations
+    #are bones which have lip, nose, eyelid 
+    #or have eyelt or eyelt in the name
+    survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt"]
+
     #this iterates through all the bones
     #removing keyframes and transforms from every bone
     for bone in armature.pose.bones:
@@ -155,19 +167,36 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
         #if this is for killer animations 
         #remove animations from ik and roll bones
         if (isKiller):
-            #the problem bones for broken killer animations are bones 
-            #which have roll and ik in their names
-            killer_problem_bones_array = ["roll", "ik"]
-            if(killer_problem_bones_array in lowercase_bone_name):
-                remove_animations_from_bone(armature, bone)
+            
+            
+            #iterate over all substrings
+            #check if lowercase_bone_name contains the substring
+            for substring in killer_problem_bones_array:
+                #check if lowercase_bone_name contains the substring
+                if(substring in lowercase_bone_name):
+                    remove_animations_from_bone(armature, bone)
+                
+                #break from for loop
+                #as the bone has now lost
+                #all keyframes and transforms
+                #there is no need to check if the keyframes
+                #need to be removed again
+                break
         else:
-            #the problem bones for broken survivor animations
-            #are bones which have lip, nose, eyelid 
-            #or have eyelt or eyelt in the name
-            survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt"]
-
-            if(survivor_problem_bones_array in lowercase_bone_name):
-                remove_animations_from_bone(armature, bone)
+            
+            #iterate over all substrings
+            #check if lowercase_bone_name contains the substring
+            for substring in survivor_problem_bones_array:
+                #check if lowercase_bone_name contains the substring
+                if(substring in lowercase_bone_name):
+                    remove_animations_from_bone(armature, bone)
+                
+                #break from for loop
+                #as the bone has now lost
+                #all keyframes and transforms
+                #there is no need to check if the keyframes
+                #need to be removed again
+                break
 
         #the jaw bone sometimes has problems on some dbd killer and survivor
         #skeletons and not others so we give the user the option to clear
