@@ -167,8 +167,6 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
         #if this is for killer animations 
         #remove animations from ik and roll bones
         if (isKiller):
-            
-            
             #iterate over all substrings
             #check if lowercase_bone_name contains the substring
             for substring in killer_problem_bones_array:
@@ -176,12 +174,12 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
                 if(substring in lowercase_bone_name):
                     remove_animations_from_bone(armature, bone)
                 
-                #break from for loop
-                #as the bone has now lost
-                #all keyframes and transforms
-                #there is no need to check if the keyframes
-                #need to be removed again
-                break
+                    #break from for loop if found
+                    #as the bone has now lost
+                    #all keyframes and transforms
+                    #there is no need to check if the keyframes
+                    #need to be removed again
+                    break
         else:
             
             #iterate over all substrings
@@ -190,13 +188,13 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
                 #check if lowercase_bone_name contains the substring
                 if(substring in lowercase_bone_name):
                     remove_animations_from_bone(armature, bone)
-                
-                #break from for loop
-                #as the bone has now lost
-                #all keyframes and transforms
-                #there is no need to check if the keyframes
-                #need to be removed again
-                break
+
+                    #break from for loop if found
+                    #as the bone has now lost
+                    #all keyframes and transforms
+                    #there is no need to check if the keyframes
+                    #need to be removed again
+                    break
 
         #the jaw bone sometimes has problems on some dbd killer and survivor
         #skeletons and not others so we give the user the option to clear
@@ -205,10 +203,10 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
         #Check this for both killer and survivor animations
         #if the user has selected to clear transforms
         #on the jaw bone because the animations are not
-        #working for it and the current bone name is joint_jaw01
+        #working for it and the current bone name contains jaw in it
         #accounting for mixed case
         #then remove all animations from this bone
-        if(is_problem_jaw_bone and lowercase_bone_name == "joint_jaw01"):
+        if(is_problem_jaw_bone and "jaw" in lowercase_bone_name):
             remove_animations_from_bone(armature, bone)
     
     #set back to object mode so the user can go about their business
