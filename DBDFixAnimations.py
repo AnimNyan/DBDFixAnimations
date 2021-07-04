@@ -1,7 +1,7 @@
 import bpy
 
 class fix_dbd_animations_properties(bpy.types.PropertyGroup):
-    is_problem_jaw_bone: bpy.props.BoolProperty(name="Fix Jaw Bone", default = False)
+    is_problem_jaw_bone: bpy.props.BoolProperty(name="Fix Jaw Bone for Killer Actions", default = False)
 
 #this is panel 2 as it is the second panel in the psk/psa panel
 class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
@@ -166,7 +166,7 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
     #the problem bones for broken survivor animations
     #are bones which have lip, nose, eyelid 
     #or have eyelt or eyelt in the name
-    survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt", "tongue"]
+    survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt", "tongue" "jaw"]
 
     #this iterates through all the bones
     #removing keyframes and transforms from every bone
@@ -191,6 +191,18 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
                     #there is no need to check if the keyframes
                     #need to be removed again
                     break
+            
+
+            #the jaw bone sometimes has problems on some dbd killer
+            #skeletons and not others so we give the user the option to clear
+            #transforms or not
+            #if the user has selected to clear transforms
+            #on the jaw bone because the animations are not
+            #working for it and the current bone name contains jaw in it
+            #accounting for mixed case
+            #then remove all animations from this bone
+            if(is_problem_jaw_bone and "jaw" in lowercase_bone_name):
+                remove_animations_from_bone(armature, bone)
         else:
             
             #iterate over all substrings
@@ -207,18 +219,7 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
                     #need to be removed again
                     break
 
-        #the jaw bone sometimes has problems on some dbd killer and survivor
-        #skeletons and not others so we give the user the option to clear
-        #transforms or not
-
-        #Check this for both killer and survivor animations
-        #if the user has selected to clear transforms
-        #on the jaw bone because the animations are not
-        #working for it and the current bone name contains jaw in it
-        #accounting for mixed case
-        #then remove all animations from this bone
-        if(is_problem_jaw_bone and "jaw" in lowercase_bone_name):
-            remove_animations_from_bone(armature, bone)
+        
     
     #set back to object mode so the user can go about their business
     bpy.ops.object.mode_set(mode='OBJECT')
