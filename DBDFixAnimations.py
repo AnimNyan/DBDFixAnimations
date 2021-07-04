@@ -104,6 +104,10 @@ def fix_all_dbd_killer_or_survivor_actions(isKiller):
     is_problem_jaw_bone = get_is_problem_jaw_bone_var()
     active_object = bpy.context.active_object
     if (active_object.type == "ARMATURE"):
+        #record the action the user was on to return them to the action when
+        #all actions have been fixed
+        first_action_user = active_object.animation_data.action
+
         #iterate through all actions on the skeleton
         #and remove the animations on problem bones for every action
         for current_action in bpy.data.actions:
@@ -114,6 +118,9 @@ def fix_all_dbd_killer_or_survivor_actions(isKiller):
         success_message = "All Problem Animations have been fixed successfully!"
         bpy.ops.pskpsa.show_message_operator(message = success_message)
         log(success_message)
+
+        #switch active action back to the first selected user action so it doesn't confuse users 
+        active_object.animation_data.action = first_action_user
 
     #throw error message if active object is not a skeleton
     else:
