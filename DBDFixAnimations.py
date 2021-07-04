@@ -23,10 +23,14 @@ class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
         
         layout.label(text ="Select the Dead By Daylight Skeleton with problem")
         layout.label(text ="Animations > Press Fix ONE Dead By Daylight Killer/Survivor Action")
-        layout.operator("pskpsa.fix_dbd_killer_active_action_operator")
-        layout.operator("pskpsa.fix_dbd_survivor_active_action_operator")
         layout.label(text ="To fix ALL Actions > Press Fix ALL Dead By Daylight Killer/Survivor Actions")
+        layout.label(text ="Fix Dead By Daylight Killer Animations")
+        layout.operator("pskpsa.fix_dbd_killer_active_action_operator")
         layout.operator("pskpsa.fix_all_dbd_killer_actions_operator")
+        
+        layout.separator()
+        layout.label(text ="Fix Dead By Daylight Survivor Animations")
+        layout.operator("pskpsa.fix_dbd_survivor_active_action_operator")
         layout.operator("pskpsa.fix_all_dbd_survivor_actions_operator")
 
 #---------------fix the active action (only one) for killer and survivor 
@@ -155,7 +159,7 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
     #the problem bones for broken survivor animations
     #are bones which have lip, nose, eyelid 
     #or have eyelt or eyelt in the name
-    survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt"]
+    survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt", "tongue"]
 
     #this iterates through all the bones
     #removing keyframes and transforms from every bone
@@ -169,9 +173,9 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
         if (isKiller):
             #iterate over all substrings
             #check if lowercase_bone_name contains the substring
-            for substring in killer_problem_bones_array:
+            for killer_substring in killer_problem_bones_array:
                 #check if lowercase_bone_name contains the substring
-                if(substring in lowercase_bone_name):
+                if(killer_substring in lowercase_bone_name):
                     remove_animations_from_bone(armature, bone)
                 
                     #break from for loop if found
@@ -184,9 +188,9 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
             
             #iterate over all substrings
             #check if lowercase_bone_name contains the substring
-            for substring in survivor_problem_bones_array:
+            for surv_substring in survivor_problem_bones_array:
                 #check if lowercase_bone_name contains the substring
-                if(substring in lowercase_bone_name):
+                if(surv_substring in lowercase_bone_name):
                     remove_animations_from_bone(armature, bone)
 
                     #break from for loop if found
