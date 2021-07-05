@@ -161,7 +161,7 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
 
     #the problem bones for broken killer animations are bones 
     #which have roll and ik in their names
-    killer_problem_bones_array = ["roll", "ik"]
+    killer_problem_bones_array = ["roll", "ik", "twist"]
 
     #the problem bones for broken survivor animations
     #are bones which have lip, nose, eyelid
