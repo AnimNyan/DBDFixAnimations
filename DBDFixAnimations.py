@@ -1,5 +1,7 @@
 import bpy
 
+#property group to store options that the user can
+#make true or false
 class fix_dbd_animations_properties(bpy.types.PropertyGroup):
     is_problem_jaw_bone: bpy.props.BoolProperty(name="Fix Jaw Bone for Killer Actions", default = False)
 
@@ -40,28 +42,26 @@ class PSKPSA_OT_fix_dbd_killer_active_action(bpy.types.Operator):
     bl_idname = "pskpsa.fix_dbd_killer_active_action_operator"
 
     def execute(self, context):
-        #True is for killer
-        fix_dbd_killer_or_survivor_active_action(True)
+        fix_dbd_killer_active_action()
         
         return {'FINISHED'}
 
-class PSKPSA_OT_fix_dbd_survivor_active_action(bpy.types.Operator):
-    bl_label = "Fix ONE Dead By Daylight Survivor Action"
-    bl_description = "Reset transforms for problem bones for one Survivor active Action"
+class PSKPSA_OT_fix_dbd_survivor_facial_anim(bpy.types.Operator):
+    bl_label = "Fix ALL Dead By Daylight Survivor Facial Animations"
+    bl_description = "Create offset facial action to fix survivor facial animations"
     bl_idname = "pskpsa.fix_dbd_survivor_active_action_operator"
 
     def execute(self, context):
-        #False is for survivor
-        fix_dbd_killer_or_survivor_active_action(False)
+        fix_dbd_survivor_active_action()
         
         return {'FINISHED'}
 
-def fix_dbd_killer_or_survivor_active_action(isKiller):
+def fix_dbd_killer_active_action():
     is_problem_jaw_bone = get_is_problem_jaw_bone_var()
 
     active_object = bpy.context.active_object
     if (active_object.type == "ARMATURE"):
-        remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone, isKiller)
+        remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone)
         success_message = "The Problem Animation has been fixed successfully!"
         bpy.ops.pskpsa.show_message_operator(message = success_message)
         log(success_message)
@@ -73,7 +73,75 @@ def fix_dbd_killer_or_survivor_active_action(isKiller):
         log(error_message)
 
 
+def fix_dbd_survivor_active_action():
+    active_object = bpy.context.active_object
 
+    #only proceed to try and create an action with reset rotation and 
+    #location for bones if the selected object is an armature
+    if (active_object.type == "ARMATURE"):
+        #before anything else push down current active action down to an NLA track
+        push_active_action_to_nla_track(active_object)
+
+        bpy.ops.object.mode_set(mode='POSE')
+
+        #deselect all the bones as all bones will start off 
+        #selected when going to pose mode
+        bpy.ops.pose.select_all(action='DESELECT')
+
+        #make a new action
+        fix_surv_face_action = bpy.data.actions.new('FixSurvivorFacialAnimations')
+        #switch the active action to the newly created action
+        active_object.animation_data.action = fix_surv_face_action
+
+        #select the face bones
+        #remember joint_Head_01 is not included 
+        #because otherwise the character will not rotate their head correctly 
+        survivor_problem_face_bones = ["joint_FacialGroup", "cheek_LT_01", "cheek_RT_01", "cheekbone_LT_01", "cheekbone_LT_02", "cheekbone_LT_03", "cheekbone_LT_04", "cheekbone_RT_01", "cheekbone_RT_02", "cheekbone_RT_03", "cheekbone_RT_04", "eye_LT", "eye_RT", "eyebrows_LT_01", "eyebrows_LT_02", "eyebrows_LT_03", "eyebrows_LT_04", "eyebrows_RT_01", "eyebrows_RT_02", "eyebrows_RT_03", "eyebrows_RT_04", "eyelids_down_LT", "eyelids_down_RT", "eyelids_up_LT", "eyelids_up_RT", "forehead_LT", "forehead_RT", "jaw", "chin", "tongue_01", "tongue_02", "tongue_03", "sneer_RT_04", "sneer_LT_04", "lips_down_RT_03", "lips_down_RT_02", "lips_down_RT_01", "lips_down_LT_03", "lips_down_LT_02", "lips_down_LT_01", "lips_down_mid", "nose", "sneer_LT_01", "sneer_LT_02", "sneer_LT_03", "sneer_RT_01", "sneer_RT_02", "sneer_RT_03", "lips_up_mid", "lips_up_RT_01", "lips_up_RT_02", "lips_up_LT_01", "lips_up_LT_02", "lips_up_LT_03", "lips_up_RT_03"]
+        
+        #select all bones from the survivor_problem_face_bones list
+        for bone_name in survivor_problem_face_bones:
+            #get the bone if the bone with the bone_name
+            #exists: returns pose bone
+            #does not exist: returns None
+            bone_to_select = active_object.pose.bones.get(bone_name)
+
+            #if bone with current bone name exists
+            #select it
+            if bone_to_select is not None:
+                #select bone
+                #because it is a pose bone you need to turn it
+                #into a bone with .bone as the pose bone does not 
+                #have a select attribute
+                bone_to_select.bone.select = True
+
+            #otherwise if bone with current bone name does not exist
+            #do nothing as you cannot select a non existent bone
+        
+
+        #clear the location, rotation, scale transforms
+        #for the problem bones which should now be selected
+        bpy.ops.pose.loc_clear()
+        bpy.ops.pose.rot_clear()
+        bpy.ops.pose.scale_clear()
+
+        #make a keyframe and push it down to an NLA track
+        bpy.ops.anim.keyframe_insert_menu(type='BUILTIN_KSI_LocRot')
+
+        #push the offset facial keyframe down to nla track
+        #on top of any other currently active action
+        push_active_action_to_nla_track(active_object)
+
+
+def push_active_action_to_nla_track(active_object):
+        action = active_object.animation_data.action
+        #safety measure check there is a keyframe before trying to push down
+        #the action to an Non Linear Animation track
+        if action is not None:
+            track = active_object.animation_data.nla_tracks.new()
+            track.strips.new(action.name, action.frame_range[0], action)
+            #set the active action to be something else
+            active_object.animation_data.action = None
+            
 
 
 #---------------fix all the actions action for killer and survivor 
@@ -83,24 +151,12 @@ class PSKPSA_OT_fix_all_dbd_killer_actions(bpy.types.Operator):
     bl_idname = "pskpsa.fix_all_dbd_killer_actions_operator"
 
     def execute(self, context):
-        #True is for Killer
-        fix_all_dbd_killer_or_survivor_actions(True)       
-
-        return {'FINISHED'}
-
-class PSKPSA_OT_fix_all_dbd_survivor_actions(bpy.types.Operator):
-    bl_label = "Fix ALL Dead By Daylight Survivor Actions"
-    bl_description = "Reset transforms for problem bones for all actions on the Surivivor skeleton"
-    bl_idname = "pskpsa.fix_all_dbd_survivor_actions_operator"
-
-    def execute(self, context):
-        #False is for Survivor
-        fix_all_dbd_killer_or_survivor_actions(False)       
+        fix_all_dbd_killer_actions()       
 
         return {'FINISHED'}
 
 
-def fix_all_dbd_killer_or_survivor_actions(isKiller):
+def fix_all_dbd_killer_actions():
     is_problem_jaw_bone = get_is_problem_jaw_bone_var()
     active_object = bpy.context.active_object
     if (active_object.type == "ARMATURE"):
@@ -113,7 +169,7 @@ def fix_all_dbd_killer_or_survivor_actions(isKiller):
         for current_action in bpy.data.actions:
             #switch active action to the next action
             active_object.animation_data.action = current_action
-            remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone, isKiller)
+            remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone)
 
         success_message = "All Problem Animations have been fixed successfully!"
         bpy.ops.pskpsa.show_message_operator(message = success_message)
@@ -141,13 +197,13 @@ def get_is_problem_jaw_bone_var():
 
 #this function will remove keyframes from problem bones and
 #reset their transforms to default for one action
-def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone, isKiller):
+def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone):
     armature = active_object
 
     bpy.ops.object.mode_set(mode='POSE')
 
-    #deselect all the bones as they will start 
-    #off selected when going to pose mode
+    #deselect all the bones as all bones will start off 
+    #selected when going to pose mode
     bpy.ops.pose.select_all(action='DESELECT')
 
     #set the current frame to frame 0
@@ -161,15 +217,11 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
 
     #the problem bones for broken killer animations are bones 
     #which have roll and ik in their names
-    killer_problem_bones_array = ["roll", "ik", "twist"]
-
-    #the problem bones for broken survivor animations
-    #are bones which have lip, nose, eyelid
-    #, eyert, eyelt, tongue or jaw in the name
-    survivor_problem_bones_array = ["lip", "nose", "eyelid", "eyert", "eyelt", "tongue", "jaw"]
+    killer_problem_bones_array = ["roll", "ik"]
 
     #this iterates through all the bones
-    #removing keyframes and transforms from every bone
+    #removing keyframes and transforms from every bone that
+    #is a problem bone meaning it contains the substring roll and ik
     for bone in armature.pose.bones:
         #use lowercase to catch bones 
         #which have mixed case names
@@ -177,47 +229,34 @@ def remove_problem_bones_transform_keyframes(active_object, is_problem_jaw_bone,
 
         #if this is for killer animations 
         #remove animations from ik and roll bones
-        if (isKiller):
-            #iterate over all substrings
-            #check if lowercase_bone_name contains the substring
-            for killer_substring in killer_problem_bones_array:
-                #check if lowercase_bone_name contains the substring
-                if(killer_substring in lowercase_bone_name):
-                    remove_animations_from_bone(armature, bone)
-                
-                    #break from for loop if found
-                    #as the bone has now lost
-                    #all keyframes and transforms
-                    #there is no need to check if the keyframes
-                    #need to be removed again
-                    break
-            
 
-            #the jaw bone sometimes has problems on some dbd killer
-            #skeletons and not others so we give the user the option to clear
-            #transforms or not
-            #if the user has selected to clear transforms
-            #on the jaw bone because the animations are not
-            #working for it and the current bone name contains jaw in it
-            #accounting for mixed case
-            #then remove all animations from this bone
-            if(is_problem_jaw_bone and "jaw" in lowercase_bone_name):
+        #iterate over all problem bones
+        #check if lowercase_bone_name contains the substring problem bone
+        for problem_bone in killer_problem_bones_array:
+            #check if lowercase_bone_name contains the substring
+            if(problem_bone in lowercase_bone_name):
                 remove_animations_from_bone(armature, bone)
-        else:
             
-            #iterate over all substrings
-            #check if lowercase_bone_name contains the substring
-            for surv_substring in survivor_problem_bones_array:
-                #check if lowercase_bone_name contains the substring
-                if(surv_substring in lowercase_bone_name):
-                    remove_animations_from_bone(armature, bone)
+                #break from for loop if found
+                #as the bone has now lost
+                #all keyframes and transforms
+                #there is no need to check if the problem_bone
+                #is in 
+                #is the keyframes
+                #need to be removed again
+                break
+        
 
-                    #break from for loop if found
-                    #as the bone has now lost
-                    #all keyframes and transforms
-                    #there is no need to check if the keyframes
-                    #need to be removed again
-                    break
+        #the jaw bone sometimes has problems on some dbd killer
+        #skeletons and not others so we give the user the option to clear
+        #transforms or not
+        #if the user has selected to clear transforms
+        #on the jaw bone because the animations are not
+        #working for it and the current bone name contains jaw in it
+        #accounting for mixed case
+        #then remove all animations from this bone
+        if(is_problem_jaw_bone and "jaw" in lowercase_bone_name):
+            remove_animations_from_bone(armature, bone)
 
         
     
@@ -290,8 +329,8 @@ def log(msg):
 
 classes = [fix_dbd_animations_properties, PSKPSA_PT_fix_dbd_animations_import_panel_2,
 
-PSKPSA_OT_fix_dbd_killer_active_action, PSKPSA_OT_fix_dbd_survivor_active_action,
-PSKPSA_OT_fix_all_dbd_killer_actions, PSKPSA_OT_fix_all_dbd_survivor_actions,
+PSKPSA_OT_fix_dbd_killer_active_action, PSKPSA_OT_fix_dbd_survivor_facial_anim,
+PSKPSA_OT_fix_all_dbd_killer_actions,
 
 PSKPSA_OT_show_message]
 
