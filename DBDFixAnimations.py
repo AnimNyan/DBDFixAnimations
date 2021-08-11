@@ -33,8 +33,7 @@ class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
         
         layout.separator()
         layout.label(text ="Fix Dead By Daylight Survivor Animations")
-        layout.operator("pskpsa.fix_dbd_survivor_active_action_operator")
-        layout.operator("pskpsa.fix_all_dbd_survivor_actions_operator")
+        layout.operator("pskpsa.fix_dbd_survivor_facial_anim_operator")
 
 #---------------fix the active action (only one) for killer and survivor 
 class PSKPSA_OT_fix_dbd_killer_active_action(bpy.types.Operator):
@@ -50,7 +49,7 @@ class PSKPSA_OT_fix_dbd_killer_active_action(bpy.types.Operator):
 class PSKPSA_OT_fix_dbd_survivor_facial_anim(bpy.types.Operator):
     bl_label = "Fix ALL Dead By Daylight Survivor Facial Animations"
     bl_description = "Create offset facial action to fix survivor facial animations"
-    bl_idname = "pskpsa.fix_dbd_survivor_active_action_operator"
+    bl_idname = "pskpsa.fix_dbd_survivor_facial_anim_operator"
 
     def execute(self, context):
         fix_dbd_survivor_active_action()
