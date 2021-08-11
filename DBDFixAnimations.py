@@ -24,8 +24,9 @@ class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
         layout.prop(fixdbdanimtool, "is_problem_jaw_bone")
         
         layout.label(text ="Select the Dead By Daylight Skeleton with problem")
-        layout.label(text ="Animations > Press Fix ONE Dead By Daylight Killer/Survivor Action")
-        layout.label(text ="To fix ALL Actions > Press Fix ALL Dead By Daylight Killer/Survivor Actions")
+        layout.label(text ="For Killer skeletons > Press Fix ONE Dead By Daylight Killer Action")
+        layout.label(text ="To fix ALL Actions > Press Fix ALL Dead By Daylight Killer Actions")
+        layout.label(text ="For Survivor skeletons > Press Fix ALL Dead By Daylight Survivor Facial Animations")
         layout.label(text ="Fix Dead By Daylight Killer Animations")
         layout.operator("pskpsa.fix_dbd_killer_active_action_operator")
         layout.operator("pskpsa.fix_all_dbd_killer_actions_operator")
