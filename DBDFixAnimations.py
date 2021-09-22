@@ -52,7 +52,7 @@ class PSKPSA_OT_fix_dbd_survivor_facial_anim(bpy.types.Operator):
     bl_idname = "pskpsa.fix_dbd_survivor_facial_anim_operator"
 
     def execute(self, context):
-        fix_dbd_survivor_active_action()
+        fix_dbd_survivor_all_actions()
         
         return {'FINISHED'}
 
@@ -73,7 +73,7 @@ def fix_dbd_killer_active_action():
         log(error_message)
 
 
-def fix_dbd_survivor_active_action():
+def fix_dbd_survivor_all_actions():
     active_object = bpy.context.active_object
 
     #only proceed to try and create an action with reset rotation and 
