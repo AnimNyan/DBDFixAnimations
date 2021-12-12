@@ -3,7 +3,7 @@ import bpy
 #property group to store options that the user can
 #make true or false
 class fix_dbd_animations_properties(bpy.types.PropertyGroup):
-    is_problem_jaw_bone: bpy.props.BoolProperty(name="Fix Jaw Bone for Killer Actions", default = False)
+    is_problem_jaw_bone: bpy.props.BoolProperty(name="Fix Jaw Bone for Survivor and Killer Actions", default = True)
 
 #this is panel 2 as it is the second panel in the psk/psa panel
 class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
