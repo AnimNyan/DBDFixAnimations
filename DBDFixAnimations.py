@@ -27,13 +27,19 @@ class PSKPSA_PT_fix_dbd_animations_import_panel_2(bpy.types.Panel):
         layout.label(text ="For Killer skeletons > Press Fix ONE Dead By Daylight Killer Action")
         layout.label(text ="To fix ALL Actions > Press Fix ALL Dead By Daylight Killer Actions")
         layout.label(text ="For Survivor skeletons > Press Fix ALL Dead By Daylight Survivor Facial Animations")
+
+        layout.label(text ="Fix Dead By Daylight Survivor Animations")
+        layout.operator("pskpsa.fix_dbd_survivor_facial_anim_operator")
+
         layout.label(text ="Fix Dead By Daylight Killer Animations")
         layout.operator("pskpsa.fix_dbd_killer_active_action_operator")
         layout.operator("pskpsa.fix_all_dbd_killer_actions_operator")
+
+        layout.label(text ="Fix Home Sweet Home Survive Survivor Animations")
+        layout.operator("pskpsa.fix_all_hshs_survivor_actions_operator")
         
         layout.separator()
-        layout.label(text ="Fix Dead By Daylight Survivor Animations")
-        layout.operator("pskpsa.fix_dbd_survivor_facial_anim_operator")
+        
 
 #---------------fix the active action (only one) for killer and survivor 
 class PSKPSA_OT_fix_dbd_killer_active_action(bpy.types.Operator):
@@ -141,10 +147,91 @@ def push_active_action_to_nla_track(active_object):
             track.strips.new(action.name, action.frame_range[0], action)
             #set the active action to be something else
             active_object.animation_data.action = None
+
+#---------------fix all HSHS survivor actions(Home Sweet Home Survive)
+class PSKPSA_OT_fix_hshs_survivor_active_action(bpy.types.Operator):
+    bl_label = "Fix ALL HSHS Survivor Actions"
+    bl_description = "Reset transforms for problem bones for all actions on the Survivor skeleton"
+    bl_idname = "pskpsa.fix_all_hshs_survivor_actions_operator"
+
+    def execute(self, context):
+        fix_all_hshs_survivor_actions()
+        
+        return {'FINISHED'}
+
+def fix_all_hshs_survivor_actions():
+    active_object = bpy.context.active_object
+    if (active_object.type == "ARMATURE"):
+        #record the action the user was on to return them to the action when
+        #all actions have been fixed
+        first_action_user = active_object.animation_data.action
+
+        #iterate through all actions on the skeleton
+        #and remove the animations on problem bones for every action
+        for current_action in bpy.data.actions:
+            #switch active action to the next action
+            active_object.animation_data.action = current_action
+            remove_problem_bones_hshs_transform_keyframes(active_object)
+
+        success_message = "All Problem Animations have been fixed successfully!"
+        bpy.ops.pskpsa.show_message_operator(message = success_message)
+        log(success_message)
+
+        #switch active action back to the first selected user action so it doesn't confuse users 
+        active_object.animation_data.action = first_action_user
+
+    #throw error message if active object is not a skeleton
+    else:
+        error_message = "Error: Active Object is not an Armature, ensure the active object is the Skeleton with problem animations."
+        bpy.ops.pskpsa.show_message_operator(message = error_message)
+        log(error_message)
+
+
+def remove_problem_bones_hshs_transform_keyframes(active_object):
+    armature = active_object
+
+    bpy.ops.object.mode_set(mode='POSE')
+
+    #deselect all the bones as all bones will start off 
+    #selected when going to pose mode
+    bpy.ops.pose.select_all(action='DESELECT')
+
+    #set the current frame to frame 0
+    #so the playback head is on frame 0
+    #the reason why is so that any keyframes
+    #used to correct the broken animations are on frame zero
+    bpy.context.scene.frame_set(0)
+    
+    #----------define problem bones arrays outside for loop over all pose bones
+    #so arrays are not constantly redefined
+
+    #the problem bones for broken killer animations are bones 
+    #which have roll and ik in their names
+    hshs_survivor_problem_bones_array = ["Head_M", "upperFaceJoint_M", "Eye_R", "Eye_L", "EyeBrowInnerJointOffset_R", "EyeBrowInnerJoint_R", "EyeBrowMid1JointOffset_R", "EyeBrowMid1Joint_R", "EyeBrowMid2JointOffset_R", "EyeBrowMid2Joint_R", "EyeBrowMid3JointOffset_R", "EyeBrowMid3Joint_R", "EyeBrowOuterJointOffset_R", "EyeBrowOuterJoint_R", "EyeBrowMiddleJointOffset_M", "EyeBrowMiddleJoint_M", "EyeBrowInnerJointOffset_L", "EyeBrowInnerJoint_L", "EyeBrowMid1JointOffset_L", "EyeBrowMid1Joint_L", "EyeBrowMid2JointOffset_L", "EyeBrowMid2Joint_L", "EyeBrowMid3JointOffset_L", "EyeBrowMid3Joint_L", "EyeBrowOuterJointOffset_L", "EyeBrowOuterJoint_L", "upperLidSimpleJoint_R", "upperLidSimpleJoint_L", "lowerLidSimpleJoint_R", "lowerLidSimpleJoint_L", "middleFaceJoint_M", "NoseSideJointOffset_R", "NoseSideJoint_R", "NoseSideJointOffset_L", "NoseSideJoint_L", "NoseUnderJointOffset_M", "NoseUnderJoint_M", "NoseMiddleJointOffset_M", "NoseMiddleJoint_M", "NostrilJointOffset_R", "NostrilJoint_R", "NostrilJointOffset_L", "NostrilJoint_L", "NoseCornerJointOffset_R", "NoseCornerJoint_R", "NoseCornerJointOffset_L", "NoseCornerJoint_L", "NoseJointOffset_M", "NoseJoint_M", "CheekRaiserJointOffset_R", "CheekRaiserJoint_R", "CheekRaiserJointOffset_L", "CheekRaiserJoint_L", "CheekJointOffset_R", "CheekJoint_R", "CheekJointOffset_L", "CheekJoint_L", "lowerFaceJoint_M", "JawJoint_M", "lowerLipJoint_M", "lowerLipAConstrainedWeightedTo_M", "lowerLipBConstrainedWeightedTo_M", "lowerLipAConstrainedWeightedTo_M1", "lowerLipBConstrainedWeightedTo_M1", "lowerTeethJoint_M", "Tongue0JointOffset_M", "Tongue0Joint_M", "Tongue1JointOffset_M", "Tongue1Joint_M", "Tongue2JointOffset_M", "Tongue2Joint_M", "Tongue3JointOffset_M", "Tongue3Joint_M", "upperLipJoint_M", "upperLipAConstrainedWeightedTo_M", "upperLipBConstrainedWeightedTo_M", "upperLipAConstrainedWeightedTo_M1", "upperLipBConstrainedWeightedTo_M1", "upperTeethJoint_M"]
+
+    #this iterates through all the bones
+    #removing keyframes and transforms from every bone that
+    #is a problem bone meaning it contains the substring roll and ik
+    for bone in armature.pose.bones:
+        #iterate over all problem bones
+        #check if lowercase_bone_name contains the substring problem bone
+        for problem_bone in hshs_survivor_problem_bones_array:
+            #check if lowercase_bone_name contains the substring
+            if(problem_bone == bone.name):
+                remove_animations_from_bone(armature, bone)
             
+                #break from for loop if found
+                #as the bone has now lost
+                #all keyframes and transforms
+                #there is no need to check if the problem_bone keyframes
+                #need to be removed again
+                break
+            
+    #set back to object mode so the user can go about their business
+    bpy.ops.object.mode_set(mode='OBJECT')
 
 
-#---------------fix all the actions action for killer and survivor 
+#---------------fix all the actions action for DBD killers
 class PSKPSA_OT_fix_all_dbd_killer_actions(bpy.types.Operator):
     bl_label = "Fix ALL Dead By Daylight Killer Actions"
     bl_description = "Reset transforms for problem bones for all actions on the Killer skeleton"
@@ -330,7 +417,7 @@ def log(msg):
 classes = [fix_dbd_animations_properties, PSKPSA_PT_fix_dbd_animations_import_panel_2,
 
 PSKPSA_OT_fix_dbd_killer_active_action, PSKPSA_OT_fix_dbd_survivor_facial_anim,
-PSKPSA_OT_fix_all_dbd_killer_actions,
+PSKPSA_OT_fix_all_dbd_killer_actions, PSKPSA_OT_fix_hshs_survivor_active_action,
 
 PSKPSA_OT_show_message]
 
